@@ -9,7 +9,7 @@ register(StyleDictionary, {
 const loader = ThemesLoader(StyleDictionary);
 
 async function run() {
-  console.log('hello world');
+
 }
 
-run();
+run ();

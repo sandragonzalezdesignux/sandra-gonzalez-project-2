@@ -1,6 +1,7 @@
 import StyleDictionary from 'style-dictionary';
-import { register } from '@tokens-studio/sd-transforms';
+import { expandTypesMap, register } from '@tokens-studio/sd-transforms';
 import ThemesLoader from 'sd-themes-loader';
+import { platform } from 'os';
 
 register(StyleDictionary, {
   withSDBuiltins: false,
@@ -9,6 +10,87 @@ register(StyleDictionary, {
 const loader = ThemesLoader(StyleDictionary);
 
 async function run() {
+  const themes = await loader.load ("/tokens")
+
+  const globalTheme = themes.getThemeByName ("global")
+  const lightTheme = themes.getThemeByName ("light");
+
+  const globalConfig = {
+    log: {
+      verbosity: "verbose"
+    },
+
+    expand: {
+      typesMap: true
+    },
+
+    platforms: {
+      web: {
+        files: [
+          {
+            format: "css/variables",
+            destination: "app/build/global/variables.css",
+          }
+        ],
+        transforms: [
+          "name/kebab",
+          "ts/resolveMath",
+          "size/pxToRem",
+          "ts/typography/fontWeight",
+          "ts/size/lineheight"
+        ]
+      }
+    }
+
+  }
+
+  const lightConfig = {
+    platforms: {
+      web: {
+        files: [
+          {
+            format: "css/variables",
+            destination: "app/build/light//variables.css",
+          }
+        ],
+        transforms: [
+          "name/kebab",
+        ]
+      }
+    }
+  }
+
+  const androidConfig = {
+    expand: {
+      typesMap: true
+    },
+
+    platforms: {
+      web: {
+        files: [
+          {
+            format: "android/dimens",
+            destination: "app/build/android/dimens.xml",
+          }
+        ],
+        transforms: [
+          "name/camel",
+          "ts/resolveMath",
+          "size/pxToRem",
+          "ts/typography/fontWeight",
+          "ts/size/lineheight"
+        ]
+      }
+    }
+
+  }
+
+  globalTheme.addConfig(globalConfig).build()
+  globalTheme.addConfig(androidConfig).build()
+  lightTheme.addConfig(lightConfig).build()
+
+  //globalTheme.print ()
+  //themes.print ()
 
 }
 
